@@ -9,7 +9,8 @@ load_dotenv()
 
 # Retrieve variables from environment
 api_url = os.getenv('API_URL')
-api_path = '/admin/client/get_list'
+# api_path = '/admin/client/get_list'
+api_path = '/admin/activity/log_get_list'
 admin = os.getenv('USERNAME_ADMIN')
 user = os.getenv('USERNAME_CLIENT')
 password = os.getenv('PASSWORD')
