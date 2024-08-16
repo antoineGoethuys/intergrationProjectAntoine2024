@@ -75,7 +75,7 @@ class APIClient:
 			if response.status_code == 201:
 				print('Product created successfully:', extracted_data)
 			elif response.status_code == 200:
-				# print('Extracted data:', extracted_data)
+				print('Extracted data:', extracted_data)
 				return extracted_data
 			else:
 				print('Product not found:', response.status_code)
@@ -91,8 +91,10 @@ if __name__ == '__main__':
 	api_client = APIClient(api_url, admin, password)
 	api_path = '/admin/client/get_list'
 	response1 = api_client.send_request(api_path)
+	# print(response1.json())
 	time.sleep(20)
 	response2 = api_client.send_request(api_path)
+	# print(response2.json())
 	a = api_client.handle_response(response1)
 	b = api_client.handle_response(response2)
 	ab = DeepDiff(a, b)

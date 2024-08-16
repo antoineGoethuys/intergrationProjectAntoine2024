@@ -2,9 +2,7 @@
 
 ## todo
 
-- [ ] install wp
 - [ ] wp ui (view)
-- [ ] data struc user
 - [ ] data struc product
 - [ ] wp user create
 - [ ] wp user update
@@ -43,8 +41,10 @@
 
  - [x] write docunentation
  - [x] make the analyses
+ - [ ] install wp
 
 ## done
 
 - [x] install fossbilling
 - [x] install rabbitMQ
+- [x] data struc user
