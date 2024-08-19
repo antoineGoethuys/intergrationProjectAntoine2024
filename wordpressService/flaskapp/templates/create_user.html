@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Create User{% endblock %}
+
+{% block content %}
+    <h1>Create User</h1>
+    <form method="post" style="padding: 10px 20px; margin-button: 10px;">
+        <label>Username:</label>
+        <input type="text" name="username">
+        <label>Email:</label>
+        <input type="text" name="email">
+        <label>Company:</label>
+        <input type="text" name="company">
+        <label>Country:</label>
+        <input type="text" name="country">
+        <label>Postcode:</label>
+        <input type="text" name="postcode">
+        <label>Password:</label>
+        <input type="password" name="password">
+        <input type="submit" value="Create">
+    </form>
+    <a href="/users" class="returnUsers">Back to Users</a>
+{% endblock %}
