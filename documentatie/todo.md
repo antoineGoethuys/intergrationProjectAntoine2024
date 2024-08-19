@@ -2,11 +2,7 @@
 
 ## todo
 
-- [ ] wp ui (view)
 - [ ] data struc product
-- [ ] wp user create
-- [ ] wp user update
-- [ ] wp user delete
 - [ ] fossbilling user create
 - [ ] fossbilling user update
 - [ ] fossbilling user delete
@@ -41,10 +37,14 @@
 
  - [x] write docunentation
  - [x] make the analyses
- - [ ] install wp
 
 ## done
 
 - [x] install fossbilling
 - [x] install rabbitMQ
 - [x] data struc user
+- [x] wp user create
+- [x] wp user update
+- [x] wp ui (view)
+- [x] install wp
+- [x] wp user delete
