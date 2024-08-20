@@ -97,5 +97,4 @@ if __name__ == '__main__':
 
     # s.send(delete_message_json)
     # print(f"Sent delete message: {delete_message_json}")
-
     s.close()

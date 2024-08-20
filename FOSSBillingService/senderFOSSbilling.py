@@ -1,14 +1,9 @@
-import json
-import os
-import time
-import requests
-import pika
+import json, os, time, requests, pika
 
 from deepdiff import DeepDiff
 from requests.auth import HTTPBasicAuth
 from rich import print
 from dotenv import load_dotenv
-
 
 class EnvironmentLoader:
     def __init__(self, env_file='.env'):
@@ -20,7 +15,6 @@ class EnvironmentLoader:
 
     def get_env_variable(self, key):
         return os.getenv(key)
-
 
 class APIClient:
     def __init__(self, base_url, admin, password):
@@ -87,31 +81,33 @@ class APIClient:
         else:
             print('Product not found:', response.status_code)
 
-
-class SenderUser:
+class senderUser:
     def __init__(self):
         self.channel = None
         self.connection = None
 
     def setup(self):
-        max_retries = 5
-        for attempt in range(max_retries):
-            try:
-                self.connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
-                self.channel = self.connection.channel()
-                self.channel.exchange_declare(
-                    exchange='userData',
-                    exchange_type='fanout',
-                    durable=True
-                )
-                print("Connected to RabbitMQ")
-                break
-            except pika.exceptions.AMQPConnectionError as e:
-                print(f"Failed to connect to RabbitMQ server: {e}. Retrying in 5 seconds...")
-                time.sleep(5)
-        else:
-            print("Exceeded maximum retries. Exiting.")
-            raise pika.exceptions.AMQPConnectionError("Could not connect to RabbitMQ server after multiple attempts.")
+        self.connection = pika.BlockingConnection(pika.ConnectionParameters('10.0.0.44'))
+        self.channel = self.connection.channel()
+        self.channel.exchange_declare(
+            exchange='userData',
+            exchange_type='fanout',
+            durable=True
+        )
+        self.channel.exchange_declare(
+            exchange='productData',
+            exchange_type='fanout',
+            durable=True
+        )
+
+        queue_name = 'wordpress'
+        try:
+            self.channel.queue_declare(queue=queue_name, passive=True)
+        except pika.exceptions.ChannelClosedByBroker:
+            self.channel = self.connection.channel()
+            self.channel.queue_declare(queue=queue_name, durable=True)
+            self.channel.queue_bind(exchange='userData', queue=queue_name)
+            self.channel.queue_bind(exchange='productData', queue=queue_name)
 
     def send(self, message):
         self.channel.basic_publish(
@@ -124,8 +120,7 @@ class SenderUser:
         )
 
     def close(self):
-        if self.connection:
-            self.connection.close()
+        self.connection.close()
 
 if __name__ == '__main__':
     env_loader = EnvironmentLoader()
@@ -133,18 +128,85 @@ if __name__ == '__main__':
     admin = env_loader.get_env_variable('USERNAME_ADMIN')
     password = env_loader.get_env_variable('PASSWORD')
 
+    s = senderUser()
+    s.setup()
+
     api_client = APIClient(api_url, admin, password)
     api_path = '/admin/client/get_list'
-    response1 = api_client.send_request(api_path)
-    data = api_client.handle_response(response1)
-
-    if data:
-        sender = SenderUser()
-        sender.setup()
-
-        for key, user_data in data.items():
-            message_json = json.dumps(user_data)
-            sender.send(message_json)
-            print(f"Sent message: {message_json}")
-
-        sender.close()
+    
+    while True:
+        user = None
+        user1 = None
+        response1 = api_client.send_request(api_path)
+        time.sleep(5)
+        response2 = api_client.send_request(api_path)
+        a = api_client.handle_response(response1)
+        b = api_client.handle_response(response2)
+        ab = DeepDiff(a, b)
+        
+        if 'values_changed' in ab:
+            print('Values changed:', ab['values_changed'])
+            for key, change in ab['values_changed'].items():
+                root_key = key.split('root[')[-1].split(']')[0].strip("'")
+                user_data = b[root_key]
+                user = {
+                    'action': 'update',
+                    'username': user_data['username'],
+                    'email': user_data['email'],
+                    'company': user_data['company'],
+                    'country': user_data['country'],
+                    'postcode': user_data['postcode'],
+                    'password': user_data['password']
+                }
+                # if "email" in key:
+                #     user1 = {
+                #         'action': 'remove',
+                #         'username': user_data['username'],
+                #         'email': user_data['email'],
+                #         'company': user_data['company'],
+                #         'country': user_data['country'],
+                #         'postcode': user_data['postcode'],
+                #         'password': user_data['password']
+                #     }    
+            print('User:', user)
+        
+        if 'dictionary_item_added' in ab:
+            print('Dictionary item added:', ab['dictionary_item_added'])
+            for key in ab['dictionary_item_added']:
+                root_key = key.split('root[')[-1].split(']')[0].strip("'")
+                user_data = b[root_key]
+                user = {
+                    'action': 'add',
+                    'username': user_data['username'],
+                    'email': user_data['email'],
+                    'company': user_data['company'],
+                    'country': user_data['country'],
+                    'postcode': user_data['postcode'],
+                    'password': user_data['password']
+                }
+            print('User:', user)
+        
+        if 'dictionary_item_removed' in ab:
+            print('Dictionary item removed:', ab['dictionary_item_removed'])
+            for key in ab['dictionary_item_removed']:
+                root_key = key.split('root[')[-1].split(']')[0].strip("'")
+                user_data = a[root_key]
+                user = {
+                    'action': 'remove',
+                    'username': user_data['username'],
+                    'email': user_data['email'],
+                    'company': user_data['company'],
+                    'country': user_data['country'],
+                    'postcode': user_data['postcode'],
+                    'password': user_data['password']
+                }
+            print('User:', user)
+        
+        print('Last updated value:', ab)
+        if user:
+            user_json = json.dumps(user)
+            s.send(user_json)
+        # if user1:
+        #     user_json1 = json.dumps(user1)
+        #     s.send(user_json1)
+    s.close()

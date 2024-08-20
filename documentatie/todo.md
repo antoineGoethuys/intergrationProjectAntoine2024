@@ -43,8 +43,8 @@
 - [x] install fossbilling
 - [x] install rabbitMQ
 - [x] data struc user
-- [x] wp user create
-- [x] wp user update
 - [x] wp ui (view)
 - [x] install wp
+- [x] wp user create
+- [x] wp user update
 - [x] wp user delete

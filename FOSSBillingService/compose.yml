@@ -14,7 +14,7 @@ services:
     volumes:
       - .:/app
     command: >
-      sh -c "pip install --upgrade pip && pip install -r requirements.txt && python posting.py"
+      sh -c "pip install --upgrade pip && pip install -r requirements.txt && python senderFOSSbilling.py"
     networks:
     - rabbitmq_go_net
   mysql:
