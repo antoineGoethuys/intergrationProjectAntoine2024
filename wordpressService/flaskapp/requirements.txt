@@ -3,3 +3,5 @@ Werkzeug>=1.0.1
 pymysql>=1.0.2
 pika>=1.2.0
 deepdiff>=7.0.1
+requests>=2.25.1
+rich>=13.7.1

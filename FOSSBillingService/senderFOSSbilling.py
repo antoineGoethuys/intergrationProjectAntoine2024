@@ -88,30 +88,11 @@ class senderUser:
 
     def setup(self):
         self.connection = pika.BlockingConnection(pika.ConnectionParameters(
-            host='localhost',  # Update with your RabbitMQ host
+            host='10.0.0.44',  # Replace with the actual IP address of the RabbitMQ server
             port=5672,  # Default RabbitMQ port
             credentials=pika.PlainCredentials('guest', 'guest')  # Update with your RabbitMQ credentials
         ))
         self.channel = self.connection.channel()
-        self.channel.exchange_declare(
-            exchange='userData',
-            exchange_type='fanout',
-            durable=True
-        )
-        self.channel.exchange_declare(
-            exchange='productData',
-            exchange_type='fanout',
-            durable=True
-        )
-
-        queue_name = 'FOSSBilling'
-        try:
-            self.channel.queue_declare(queue=queue_name, passive=True)
-        except pika.exceptions.ChannelClosedByBroker:
-            self.channel = self.connection.channel()
-            self.channel.queue_declare(queue=queue_name, durable=True)
-            self.channel.queue_bind(exchange='userData', queue=queue_name)
-            self.channel.queue_bind(exchange='productData', queue=queue_name)
 
     def send(self, message):
         self.channel.basic_publish(

@@ -13,7 +13,16 @@ services:
       sh -c "pip install -r requirements.txt && python api.py"
     networks:
       - rabbitmq_go_net
-
+  rabbitmq_sender:
+      image: python:3.9-slim
+      working_dir: /app
+      restart: always
+      volumes:
+        - .:/app
+      command: >
+        sh -c "pip install --upgrade pip && pip install -r requirements.txt && python senderWP.py"
+      networks:
+      - rabbitmq_go_net
   rabbitmq_reciver:
     image: python:3.9-slim
     working_dir: /app
@@ -23,17 +32,7 @@ services:
     command: >
       sh -c "pip install -r requirements.txt && python reciverWP.py"
     networks:
-    - rabbitmq_go_net
-  rabbitmq_sender:
-    image: python:3.9-slim
-    working_dir: /app
-    restart: always
-    volumes:
-      - .:/app
-    command: >
-      sh -c "pip install -r requirements.txt && python senderWP.py"
-    networks:
-    - rabbitmq_go_net
+      - rabbitmq_go_net
 
 networks:
   rabbitmq_go_net:

@@ -7,16 +7,16 @@ services:
       - 8080:80
     volumes:
       - fossbilling:/var/www/html
-  rabbit_mq:
-    image: python:3.9-slim
-    working_dir: /app
-    restart: always
-    volumes:
-      - .:/app
-    command: >
-      sh -c "pip install --upgrade pip && pip install -r requirements.txt && python senderFOSSbilling.py"
-    networks:
-    - rabbitmq_go_net
+  # rabbit_mq:
+  #   image: python:3.9-slim
+  #   working_dir: /app
+  #   restart: always
+  #   volumes:
+  #     - .:/app
+  #   command: >
+  #     sh -c "pip install --upgrade pip && pip install -r requirements.txt && python senderFOSSbilling.py"
+  #   networks:
+  #   - rabbitmq_go_net
   mysql:
     image: mysql:8.2
     restart: always
