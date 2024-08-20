@@ -87,7 +87,11 @@ class senderUser:
         self.connection = None
 
     def setup(self):
-        self.connection = pika.BlockingConnection(pika.ConnectionParameters('10.0.0.44'))
+        self.connection = pika.BlockingConnection(pika.ConnectionParameters(
+            host='localhost',  # Update with your RabbitMQ host
+            port=5672,  # Default RabbitMQ port
+            credentials=pika.PlainCredentials('guest', 'guest')  # Update with your RabbitMQ credentials
+        ))
         self.channel = self.connection.channel()
         self.channel.exchange_declare(
             exchange='userData',
@@ -100,7 +104,7 @@ class senderUser:
             durable=True
         )
 
-        queue_name = 'wordpress'
+        queue_name = 'FOSSBilling'
         try:
             self.channel.queue_declare(queue=queue_name, passive=True)
         except pika.exceptions.ChannelClosedByBroker:
@@ -121,7 +125,6 @@ class senderUser:
 
     def close(self):
         self.connection.close()
-
 if __name__ == '__main__':
     env_loader = EnvironmentLoader()
     api_url = env_loader.get_env_variable('API_URL')

@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  web:
+  api:
     image: python:3.9-slim
     working_dir: /app
     restart: always
@@ -11,14 +11,27 @@ services:
       - "5000:5000"
     command: >
       sh -c "pip install -r requirements.txt && python api.py"
-  rabbitmq:
+    networks:
+      - rabbitmq_go_net
+
+  rabbitmq_reciver:
     image: python:3.9-slim
     working_dir: /app
     restart: always
     volumes:
       - .:/app
     command: >
-      sh -c "pip install -r requirements.txt && python wp_rabbit_mq.py"
+      sh -c "pip install -r requirements.txt && python reciverWP.py"
+    networks:
+    - rabbitmq_go_net
+  rabbitmq_sender:
+    image: python:3.9-slim
+    working_dir: /app
+    restart: always
+    volumes:
+      - .:/app
+    command: >
+      sh -c "pip install -r requirements.txt && python senderWP.py"
     networks:
     - rabbitmq_go_net
 
