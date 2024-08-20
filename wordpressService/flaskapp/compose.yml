@@ -4,9 +4,24 @@ services:
   web:
     image: python:3.9-slim
     working_dir: /app
+    restart: always
     volumes:
       - .:/app
     ports:
       - "5000:5000"
     command: >
       sh -c "pip install -r requirements.txt && python api.py"
+  rabbitmq:
+    image: python:3.9-slim
+    working_dir: /app
+    restart: always
+    volumes:
+      - .:/app
+    command: >
+      sh -c "pip install -r requirements.txt && python wp_rabbit_mq.py"
+    networks:
+    - rabbitmq_go_net
+
+networks:
+  rabbitmq_go_net:
+    driver: bridge

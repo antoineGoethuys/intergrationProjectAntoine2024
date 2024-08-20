@@ -30,12 +30,12 @@ def users():
 @app.route('/create_user', methods=['GET', 'POST'])
 def create_user():
     if request.method == 'POST':
-        username = request.form['username']
         email = request.form['email']
+        username = email.split('@')[0]
         company = request.form['company']
         country = request.form['country']
         postcode = request.form['postcode']
-        password = request.form['password']
+        password = username + postcode
         conn = get_db_connection()
         conn.execute('INSERT INTO users (username, email, company, country, postcode, password) VALUES (?, ?, ?, ?, ?, ?)', (username, email, company, country, postcode, password))
         conn.commit()
@@ -48,12 +48,12 @@ def update_user(id):
     conn = get_db_connection()
     user = conn.execute('SELECT * FROM users WHERE id = ?', (id,)).fetchone()
     if request.method == 'POST':
-        username = request.form['username']
         email = request.form['email']
+        username = email.split('@')[0]
         company = request.form['company']
         country = request.form['country']
         postcode = request.form['postcode']
-        password = request.form['password']
+        password = username + postcode
         conn.execute('UPDATE users SET username = ?, email = ?, company = ?, country = ?, postcode = ?, password = ? WHERE id = ?', (username, email, company, country, postcode, password, id))
         conn.commit()
         conn.close()

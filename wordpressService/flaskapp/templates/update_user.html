@@ -6,7 +6,7 @@
     <h1>Update User</h1>
     <form method="post">
         <label>Username:</label>
-        <input type="text" name="username" value="{{ user.username }}">
+        <input type="text" name="username" value="{{ user.username }}" disabled>
         <label>Email:</label>
         <input type="text" name="email" value="{{ user.email }}">
         <label>Company:</label>
@@ -16,7 +16,7 @@
         <label>Postcode:</label>
         <input type="text" name="postcode" value="{{ user.postcode }}">
         <label>Password:</label>
-        <input type="password" name="password" value="{{ user.password }}">
+        <input type="password" name="password" value="{{ user.password }}" disabled>
         <input type="submit" value="Update">
     </form>
     <a href="/users">Back to Users</a>

@@ -1,4 +1,8 @@
-import json, os, time, requests, pika
+import json
+import os
+import time
+import requests
+import pika
 
 from deepdiff import DeepDiff
 from requests.auth import HTTPBasicAuth
@@ -83,26 +87,31 @@ class APIClient:
         else:
             print('Product not found:', response.status_code)
 
-class senderUser:
+
+class SenderUser:
     def __init__(self):
         self.channel = None
         self.connection = None
 
     def setup(self):
-        try:
-            self.connection = pika.BlockingConnection(pika.ConnectionParameters('localhost', 5672))
-            self.channel = self.connection.channel()
-            self.channel.exchange_declare(
-                exchange='userData',
-                exchange_type='fanout',
-                durable=True
-            )
-        except pika.exceptions.AMQPConnectionError as e:
-            print(f"Connection error: {e}")
-            exit(1)
-        except Exception as e:
-            print(f"An unexpected error occurred: {e}")
-            exit(1)
+        max_retries = 5
+        for attempt in range(max_retries):
+            try:
+                self.connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
+                self.channel = self.connection.channel()
+                self.channel.exchange_declare(
+                    exchange='userData',
+                    exchange_type='fanout',
+                    durable=True
+                )
+                print("Connected to RabbitMQ")
+                break
+            except pika.exceptions.AMQPConnectionError as e:
+                print(f"Failed to connect to RabbitMQ server: {e}. Retrying in 5 seconds...")
+                time.sleep(5)
+        else:
+            print("Exceeded maximum retries. Exiting.")
+            raise pika.exceptions.AMQPConnectionError("Could not connect to RabbitMQ server after multiple attempts.")
 
     def send(self, message):
         self.channel.basic_publish(
@@ -124,23 +133,18 @@ if __name__ == '__main__':
     admin = env_loader.get_env_variable('USERNAME_ADMIN')
     password = env_loader.get_env_variable('PASSWORD')
 
-    s = senderUser()
-    s.setup()
-
     api_client = APIClient(api_url, admin, password)
     api_path = '/admin/client/get_list'
-    
     response1 = api_client.send_request(api_path)
-    a = api_client.handle_response(response1)
-    time.sleep(20)
-    response2 = api_client.send_request(api_path)
-    a = api_client.handle_response(response1)
-    b = api_client.handle_response(response2)
-    ab = DeepDiff(a, b)
+    data = api_client.handle_response(response1)
 
-    # Extract the value of the last updated item
-    last_updated_value = ab.get('values_changed', {}).get('root', {}).get('new_value', None)
-    message_json = json.dumps(last_updated_value)
-    print('Last updated value:', message_json)
-    s.send(message_json)
-    s.close()
+    if data:
+        sender = SenderUser()
+        sender.setup()
+
+        for key, user_data in data.items():
+            message_json = json.dumps(user_data)
+            sender.send(message_json)
+            print(f"Sent message: {message_json}")
+
+        sender.close()
