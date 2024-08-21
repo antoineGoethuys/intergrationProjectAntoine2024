@@ -62,7 +62,7 @@ class APIClient:
             country = value["country"]
             postcode = value["postcode"]
             username = email.split("@")[0]
-            password = username + postcode
+            password = value["password"]
 
             extracted_data[key] = {
                 "email": email,

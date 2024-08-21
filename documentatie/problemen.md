@@ -1,0 +1,20 @@
+# problemen onderweg
+ - installatie van wordpress in docker (3-4 weken tijd)
+   - moeilijk met docker syteem 
+ - slordigheid
+ - telaat met het echt beginnen werken (midden juli)
+ - installeren van de vm
+   - 1e van de mijn vm
+     - de schijf was super vol maar ik had in de virtual disk verander naar +40Gb maar hij wou er maar 11Gb van gebruiken dus had ik veel errors van u kunt deze file niet opslaan wegen een tekort aan plaats maar het was gewoon een print statment toegevoegd maar hij wou niet
+     - dus veer tijd verloren aan die vm weer levend te maken (+- 1-2 weken) gebrobeerd
+   - 2e vm is de huidige vm
+ - te snel beginnen weken 
+   - bijna niet nagedacht hoe het werkt in de grote lijnen en dus veel tijd verspeeld aan direct beginnen werken en dus niet echt beginnen beredeneren over hoe deze zou er moeten na zijn
+     - file structure
+     - classdiagram
+     - ...
+   - dus als gevolg veel moeten proberen alles met elkaar te laten werken en dus veel debugging en dus weinig werk weergegeven
+ - te veel herbegonnen met de code als gevolg van te weig bedenking over het project
+ - weinig to geen veilige code (crededentials die direct in de files liggen (docker-compose, python-scripts))
+## resultaat
+ - veel van de mvp niet voldaan
