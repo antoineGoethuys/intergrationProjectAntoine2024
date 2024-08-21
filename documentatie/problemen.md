@@ -16,5 +16,6 @@
    - dus als gevolg veel moeten proberen alles met elkaar te laten werken en dus veel debugging en dus weinig werk weergegeven
  - te veel herbegonnen met de code als gevolg van te weig bedenking over het project
  - weinig to geen veilige code (crededentials die direct in de files liggen (docker-compose, python-scripts))
+ - het vergeten gebruiken van direct topic exchanges
 ## resultaat
  - veel van de mvp niet voldaan

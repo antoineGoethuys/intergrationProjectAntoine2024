@@ -3,9 +3,6 @@
 ## todo
 
 - [ ] data struc product
-- [ ] fossbilling user create
-- [ ] fossbilling user update
-- [ ] fossbilling user delete
 - [ ] write test
     - [ ] wp user create
     - [ ] wp user update
@@ -37,6 +34,10 @@
 
  - [x] write docunentation
  - [x] make the analyses
+ - [ ] wp user delete
+ - [ ] fossbilling user create
+ - [ ] fossbilling user update
+ - [ ] fossbilling user delete
 
 ## done
 
@@ -47,4 +48,3 @@
 - [x] install wp
 - [x] wp user create
 - [x] wp user update
-- [x] wp user delete
